@@ -4,6 +4,8 @@
 //! surface against a disposable local MongoDB fixture using only the generated
 //! database and collection from the fixture environment.
 
+#![allow(clippy::result_large_err)]
+
 use anyhow::{Context, Result, bail, ensure};
 use chrono::Utc;
 use serde_json::{Value, json};
