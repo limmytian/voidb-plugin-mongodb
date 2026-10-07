@@ -12,8 +12,8 @@ name = "voidb-plugin-mongodb"
 path = "src/main.rs"
 
 [dependencies]
-voidb-process-plugin-sdk = { path = "../voidb/crates/voidb-process-plugin-sdk" }
-voidb-core = { path = "../voidb/crates/voidb-core" }
+voidb-process-plugin-sdk = { git = "https://github.com/limmytian/voidb.git", tag = "v0.3.0-rc.1" }
+voidb-core = { git = "https://github.com/limmytian/voidb.git", tag = "v0.3.0-rc.1" }
 mongodb = "3"
 bson = "2"
 futures = "0.3"
@@ -36,3 +36,7 @@ path = "examples/export_schemas.rs"
 [[example]]
 name = "fixture_smoke"
 path = "examples/fixture_smoke.rs"
+
+[patch."https://github.com/limmytian/voidb.git"]
+voidb-process-plugin-sdk = { path = "../voidb/crates/voidb-process-plugin-sdk" }
+voidb-core = { path = "../voidb/crates/voidb-core" }
