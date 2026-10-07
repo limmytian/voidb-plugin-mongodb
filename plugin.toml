@@ -13,7 +13,7 @@ transport = "stdio-jsonrpc"
 
 [connections]
 profile_schema = "schemas/profile.schema.json"
-secret_classes = ["password", "client_certificate", "aws_credentials"]
+secret_classes = ["password", "client_certificate", "cloud_access_key", "cloud_secret_key"]
 
 [[capabilities]]
 id = "diagnostics"
