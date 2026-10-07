@@ -36,7 +36,3 @@ path = "examples/export_schemas.rs"
 [[example]]
 name = "fixture_smoke"
 path = "examples/fixture_smoke.rs"
-
-[patch."https://github.com/limmytian/voidb.git"]
-voidb-process-plugin-sdk = { path = "../voidb/crates/voidb-process-plugin-sdk" }
-voidb-core = { path = "../voidb/crates/voidb-core" }

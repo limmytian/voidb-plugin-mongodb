@@ -3,3 +3,5 @@
 **/*.rs.bk
 *.log
 .DS_Store
+
+.cargo/
