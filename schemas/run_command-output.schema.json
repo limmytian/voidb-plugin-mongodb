@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "required": [
+    "ok",
+    "operation",
+    "dry_run",
+    "destructive",
+    "details"
+  ],
+  "properties": {
+    "ok": {
+      "type": "boolean"
+    },
+    "operation": {
+      "type": "string"
+    },
+    "dry_run": {
+      "type": "boolean"
+    },
+    "would_execute": {
+      "type": "boolean"
+    },
+    "destructive": {
+      "type": "boolean"
+    },
+    "details": {
+      "type": "object"
+    },
+    "result": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "result_summary": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

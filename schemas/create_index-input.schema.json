@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "required": [
+    "database",
+    "collection",
+    "keys"
+  ],
+  "properties": {
+    "database": {
+      "type": "string",
+      "minLength": 1
+    },
+    "collection": {
+      "type": "string",
+      "minLength": 1
+    },
+    "keys": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "unique": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "additionalProperties": false
+}

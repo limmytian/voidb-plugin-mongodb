@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "required": [
+    "uri_scheme",
+    "default_db_present",
+    "auth_type",
+    "timeout_secs",
+    "tls_enabled",
+    "network_checked"
+  ],
+  "properties": {
+    "uri_scheme": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "default_db_present": {
+      "type": "boolean"
+    },
+    "auth_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "timeout_secs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tls_enabled": {
+      "type": "boolean"
+    },
+    "network_checked": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,74 @@
+{
+  "type": "object",
+  "required": [
+    "databases",
+    "item_count",
+    "source_item_count",
+    "limit",
+    "cursor",
+    "next_cursor",
+    "truncated",
+    "metadata"
+  ],
+  "properties": {
+    "databases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "size_on_disk",
+          "empty"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "size_on_disk": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "item_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "source_item_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

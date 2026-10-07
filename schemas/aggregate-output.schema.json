@@ -1,0 +1,63 @@
+{
+  "type": "object",
+  "required": [
+    "database",
+    "collection",
+    "documents",
+    "document_summaries",
+    "item_count",
+    "limit",
+    "cursor",
+    "next_cursor",
+    "truncated",
+    "metadata"
+  ],
+  "properties": {
+    "database": {
+      "type": "string"
+    },
+    "collection": {
+      "type": "string"
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "document_summaries": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "item_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

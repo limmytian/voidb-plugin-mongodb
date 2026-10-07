@@ -1,0 +1,233 @@
+id = "mongodb"
+name = "MongoDB Document Database Plugin"
+version = "0.3.0"
+protocol_version = "1"
+description = "MongoDB database, collection, document, and aggregation capability plugin for VoidB."
+license = "Apache-2.0"
+homepage = "https://github.com/limmytian/voidb-plugin-mongodb"
+
+[runtime]
+command = "voidb-plugin-mongodb"
+args = ["serve"]
+transport = "stdio-jsonrpc"
+
+[connections]
+profile_schema = "schemas/profile.schema.json"
+secret_classes = ["password", "client_certificate", "aws_credentials"]
+
+[[capabilities]]
+id = "diagnostics"
+description = "Return agent-safe MongoDB profile diagnostics without opening a cluster connection."
+input_schema = "schemas/diagnostics-input.schema.json"
+output_schema = "schemas/diagnostics-output.schema.json"
+permissions = ["connection.read", "mongodb.diagnostics"]
+risk = "read_only"
+destructive = false
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "databases"
+description = "List MongoDB databases with bounded, cursor-based output."
+input_schema = "schemas/databases-input.schema.json"
+output_schema = "schemas/databases-output.schema.json"
+permissions = ["connection.read", "mongodb.databases.list"]
+risk = "read_only"
+destructive = false
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "collections"
+description = "List MongoDB collections in one database with bounded output."
+input_schema = "schemas/collections-input.schema.json"
+output_schema = "schemas/collections-output.schema.json"
+permissions = ["connection.read", "mongodb.collections.list"]
+risk = "read_only"
+destructive = false
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "find"
+description = "Find MongoDB documents with bounded, cursor-based output."
+input_schema = "schemas/find-input.schema.json"
+output_schema = "schemas/find-output.schema.json"
+permissions = ["connection.read", "mongodb.documents.find"]
+risk = "read_only"
+destructive = false
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "count"
+description = "Count MongoDB documents matching a filter."
+input_schema = "schemas/count-input.schema.json"
+output_schema = "schemas/count-output.schema.json"
+permissions = ["connection.read", "mongodb.documents.count"]
+risk = "read_only"
+destructive = false
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "aggregate"
+description = "Run a read-only MongoDB aggregation pipeline with bounded output."
+input_schema = "schemas/aggregate-input.schema.json"
+output_schema = "schemas/aggregate-output.schema.json"
+permissions = ["connection.read", "mongodb.documents.aggregate"]
+risk = "read_only"
+destructive = false
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "cursor_read"
+description = "Read a persistent MongoDB find or aggregation cursor with source-paced batches."
+input_schema = "schemas/cursor_read-input.schema.json"
+output_schema = "schemas/cursor_read-output.schema.json"
+permissions = ["connection.read", "mongodb.documents.find"]
+risk = "read_only"
+destructive = false
+streaming = true
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "change_stream_read"
+description = "Read a MongoDB collection change stream with scoped resume tokens."
+input_schema = "schemas/change_stream_read-input.schema.json"
+output_schema = "schemas/change_stream_read-output.schema.json"
+permissions = ["connection.read", "mongodb.change_streams.read"]
+risk = "read_only"
+destructive = false
+streaming = true
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "indexes"
+description = "List MongoDB indexes for one collection with bounded output."
+input_schema = "schemas/indexes-input.schema.json"
+output_schema = "schemas/indexes-output.schema.json"
+permissions = ["connection.read", "mongodb.indexes.list"]
+risk = "read_only"
+destructive = false
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = false
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "insert"
+description = "Insert one MongoDB document."
+input_schema = "schemas/insert-input.schema.json"
+output_schema = "schemas/insert-output.schema.json"
+permissions = ["connection.write", "mongodb.documents.insert"]
+risk = "destructive"
+destructive = true
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = true
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "update"
+description = "Update MongoDB documents matching a filter."
+input_schema = "schemas/update-input.schema.json"
+output_schema = "schemas/update-output.schema.json"
+permissions = ["connection.write", "mongodb.documents.update"]
+risk = "destructive"
+destructive = true
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = true
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "delete"
+description = "Delete MongoDB documents matching a filter."
+input_schema = "schemas/delete-input.schema.json"
+output_schema = "schemas/delete-output.schema.json"
+permissions = ["connection.write", "mongodb.documents.delete"]
+risk = "destructive"
+destructive = true
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = true
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "bulk_write"
+description = "Execute a bounded ordered or unordered MongoDB write batch with item-level results."
+input_schema = "schemas/bulk_write-input.schema.json"
+output_schema = "schemas/bulk_write-output.schema.json"
+permissions = ["connection.write", "mongodb.documents.bulk_write"]
+risk = "destructive"
+destructive = true
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = true
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "create_index"
+description = "Create one MongoDB index."
+input_schema = "schemas/create_index-input.schema.json"
+output_schema = "schemas/create_index-output.schema.json"
+permissions = ["connection.write", "mongodb.indexes.create"]
+risk = "destructive"
+destructive = true
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = true
+default_timeout_ms = 30000
+
+[[capabilities]]
+id = "run_command"
+description = "Run a raw MongoDB database command; all raw commands are destructive-gated."
+input_schema = "schemas/run_command-input.schema.json"
+output_schema = "schemas/run_command-output.schema.json"
+permissions = ["connection.write", "mongodb.raw_command"]
+risk = "destructive"
+destructive = true
+streaming = false
+connection_required = true
+required_secret_classes = []
+supports_dry_run = true
+default_timeout_ms = 30000
+
+[ui]
+tui = false
+
+[requirements]
+voidb_core = ">=0.1.0"
+platforms = ["darwin", "linux", "windows"]

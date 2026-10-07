@@ -1,0 +1,5 @@
+/target
+/bin
+**/*.rs.bk
+*.log
+.DS_Store

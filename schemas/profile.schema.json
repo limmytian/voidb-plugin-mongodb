@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MongoConnectionProfile",
+  "type": "object",
+  "required": [
+    "uri"
+  ],
+  "properties": {
+    "uri": {
+      "type": "string",
+      "description": "MongoDB connection URI, e.g. mongodb://localhost:27017 or mongodb+srv://cluster..."
+    },
+    "default_db": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Default database name"
+    },
+    "auth": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Password",
+            "X509",
+            "AwsIam"
+          ]
+        },
+        "username": {
+          "type": "string",
+          "description": "Username for Password auth"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password for Password auth"
+        },
+        "auth_db": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Authentication source database"
+        },
+        "cert_path": {
+          "type": "string",
+          "description": "Certificate path for X509"
+        },
+        "key_path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Private key path for X509"
+        },
+        "access_key": {
+          "type": "string",
+          "description": "AWS access key for AwsIam"
+        },
+        "secret_key": {
+          "type": "string",
+          "description": "AWS secret key for AwsIam"
+        },
+        "session_token": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "AWS session token"
+        }
+      }
+    },
+    "timeout": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 10,
+      "description": "Connection timeout in seconds"
+    },
+    "tls": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "ca_file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "allow_invalid_certs": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

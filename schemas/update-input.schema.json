@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "required": [
+    "database",
+    "collection",
+    "filter",
+    "update"
+  ],
+  "properties": {
+    "database": {
+      "type": "string",
+      "minLength": 1
+    },
+    "collection": {
+      "type": "string",
+      "minLength": 1
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "update": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

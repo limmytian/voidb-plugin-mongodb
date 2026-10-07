@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "required": [
+    "database",
+    "collection",
+    "count",
+    "filter_summary"
+  ],
+  "properties": {
+    "database": {
+      "type": "string"
+    },
+    "collection": {
+      "type": "string"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "filter_summary": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}
