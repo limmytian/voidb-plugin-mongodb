@@ -1,6 +1,6 @@
 id = "mongodb"
 name = "MongoDB Document Database Plugin"
-version = "0.3.0"
+version = "0.3.3"
 protocol_version = "1"
 description = "MongoDB database, collection, document, and aggregation capability plugin for VoidB."
 license = "Apache-2.0"
