@@ -11,223 +11,942 @@ command = "voidb-plugin-mongodb"
 args = ["serve"]
 transport = "stdio-jsonrpc"
 
+[runtime.env]
+
 [connections]
 profile_schema = "schemas/profile.schema.json"
-secret_classes = ["password", "client_certificate", "cloud_access_key", "cloud_secret_key"]
+secret_classes = [
+    "password",
+    "client_certificate",
+    "cloud_access_key",
+    "cloud_secret_key",
+]
 
 [[capabilities]]
 id = "diagnostics"
 description = "Return agent-safe MongoDB profile diagnostics without opening a cluster connection."
 input_schema = "schemas/diagnostics-input.schema.json"
 output_schema = "schemas/diagnostics-output.schema.json"
-permissions = ["connection.read", "mongodb.diagnostics"]
+permissions = [
+    "connection.read",
+    "mongodb.diagnostics",
+]
 risk = "read_only"
 destructive = false
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
 
 [[capabilities]]
 id = "databases"
 description = "List MongoDB databases with bounded, cursor-based output."
 input_schema = "schemas/databases-input.schema.json"
 output_schema = "schemas/databases-output.schema.json"
-permissions = ["connection.read", "mongodb.databases.list"]
+permissions = [
+    "connection.read",
+    "mongodb.databases.list",
+]
 risk = "read_only"
 destructive = false
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
 
 [[capabilities]]
 id = "collections"
 description = "List MongoDB collections in one database with bounded output."
 input_schema = "schemas/collections-input.schema.json"
 output_schema = "schemas/collections-output.schema.json"
-permissions = ["connection.read", "mongodb.collections.list"]
+permissions = [
+    "connection.read",
+    "mongodb.collections.list",
+]
 risk = "read_only"
 destructive = false
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
 
 [[capabilities]]
 id = "find"
 description = "Find MongoDB documents with bounded, cursor-based output."
 input_schema = "schemas/find-input.schema.json"
 output_schema = "schemas/find-output.schema.json"
-permissions = ["connection.read", "mongodb.documents.find"]
+permissions = [
+    "connection.read",
+    "mongodb.documents.find",
+]
 risk = "read_only"
 destructive = false
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+capability_wide_allowed = true
+
+[[capabilities.authorization.session_purposes]]
+kind = "database_query"
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
 
 [[capabilities]]
 id = "count"
 description = "Count MongoDB documents matching a filter."
 input_schema = "schemas/count-input.schema.json"
 output_schema = "schemas/count-output.schema.json"
-permissions = ["connection.read", "mongodb.documents.count"]
+permissions = [
+    "connection.read",
+    "mongodb.documents.count",
+]
 risk = "read_only"
 destructive = false
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+capability_wide_allowed = true
+
+[[capabilities.authorization.session_purposes]]
+kind = "database_query"
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
 
 [[capabilities]]
 id = "aggregate"
 description = "Run a read-only MongoDB aggregation pipeline with bounded output."
 input_schema = "schemas/aggregate-input.schema.json"
 output_schema = "schemas/aggregate-output.schema.json"
-permissions = ["connection.read", "mongodb.documents.aggregate"]
+permissions = [
+    "connection.read",
+    "mongodb.documents.aggregate",
+]
 risk = "read_only"
 destructive = false
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+capability_wide_allowed = true
+
+[[capabilities.authorization.session_purposes]]
+kind = "database_query"
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
 
 [[capabilities]]
 id = "cursor_read"
 description = "Read a persistent MongoDB find or aggregation cursor with source-paced batches."
 input_schema = "schemas/cursor_read-input.schema.json"
 output_schema = "schemas/cursor_read-output.schema.json"
-permissions = ["connection.read", "mongodb.documents.find"]
+permissions = [
+    "connection.read",
+    "mongodb.documents.find",
+]
 risk = "read_only"
 destructive = false
 streaming = true
+execution_mode = "session_only"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+note = "MongoDB live cursors are isolated from run_command transaction sessions; resource scope and resume tokens are revalidated at open."
+capability_wide_allowed = true
+
+[[capabilities.authorization.session_purposes]]
+kind = "database_query"
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/resource/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/resource/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "prefix"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/parameters/filter"
+label = "Query or change filter"
+value_type = "json"
+required = false
+constraint = "subset"
+risk_emphasis = "normal"
+
+[capabilities.session_handoff]
+capabilities = ["mongodb.cursor_read"]
+
+[capabilities.session_handoff.purpose]
+kind = "database_query"
+
+[capabilities.session_handoff.live_session]
+protocol_version = 1
+start_risk = "read_only"
+
+[capabilities.session_handoff.live_session.kind]
+kind = "cursor"
+
+[capabilities.session_handoff.live_session.resource]
+resource_type = "mongodb_collection_cursor"
+identity_fields = [
+    "/database",
+    "/collection",
+]
+audit_identity = "fingerprint"
+
+[capabilities.session_handoff.live_session.resource.identity_schema]
+type = "object"
+required = [
+    "database",
+    "collection",
+]
+additionalProperties = false
+
+[capabilities.session_handoff.live_session.resource.identity_schema.properties.database]
+type = "string"
+minLength = 1
+maxLength = 256
+
+[capabilities.session_handoff.live_session.resource.identity_schema.properties.collection]
+type = "string"
+minLength = 1
+maxLength = 256
+
+[capabilities.session_handoff.live_session.start_parameters_schema]
+type = "object"
+additionalProperties = false
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.mode]
+type = "string"
+enum = [
+    "find",
+    "aggregate",
+]
+default = "find"
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.filter]
+type = "object"
+additionalProperties = true
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.pipeline]
+type = "array"
+maxItems = 64
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.pipeline.items]
+type = "object"
+additionalProperties = true
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.sort]
+type = "object"
+additionalProperties = true
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.batch_size]
+type = "integer"
+minimum = 1
+maximum = 500
+default = 100
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.max_time_ms]
+type = "integer"
+minimum = 1
+maximum = 30000
+default = 30000
+
+[capabilities.session_handoff.live_session.event_schema]
+type = "object"
+required = [
+    "document",
+    "document_omitted",
+]
+additionalProperties = false
+
+[capabilities.session_handoff.live_session.event_schema.properties.document]
+
+[capabilities.session_handoff.live_session.event_schema.properties.document_omitted]
+type = "boolean"
+
+[capabilities.session_handoff.live_session.operations]
+events = "mongodb.cursor_read"
+
+[capabilities.session_handoff.live_session.buffer]
+max_events = 500
+max_bytes = 2097152
+overflow = "drop_oldest"
+
+[capabilities.session_handoff.live_session.reconnect]
+mode = "never"
+max_attempts = 0
+initial_backoff_ms = 0
+max_backoff_ms = 0
+resume = "unsupported"
+
+[capabilities.session_handoff.live_session.delivery]
+backpressure = "source_paced"
+cursor_scope = "optional"
+max_read_wait_ms = 30000
+
+[capabilities.session_handoff.live_session.delivery.heartbeat]
+
+[capabilities.session_handoff.live_session.control]
+cancel = "call_and_source"
+close = "stop_observation"
 
 [[capabilities]]
 id = "change_stream_read"
 description = "Read a MongoDB collection change stream with scoped resume tokens."
 input_schema = "schemas/change_stream_read-input.schema.json"
 output_schema = "schemas/change_stream_read-output.schema.json"
-permissions = ["connection.read", "mongodb.change_streams.read"]
+permissions = [
+    "connection.read",
+    "mongodb.change_streams.read",
+]
 risk = "read_only"
 destructive = false
 streaming = true
+execution_mode = "session_only"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+note = "MongoDB live cursors are isolated from run_command transaction sessions; resource scope and resume tokens are revalidated at open."
+capability_wide_allowed = true
+
+[[capabilities.authorization.session_purposes]]
+kind = "watch_stream"
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/resource/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/resource/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "prefix"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/parameters/pipeline"
+label = "Query or change filter"
+value_type = "json"
+required = false
+constraint = "subset"
+risk_emphasis = "normal"
+
+[capabilities.session_handoff]
+capabilities = ["mongodb.change_stream_read"]
+
+[capabilities.session_handoff.purpose]
+kind = "watch_stream"
+
+[capabilities.session_handoff.live_session]
+protocol_version = 1
+start_risk = "read_only"
+
+[capabilities.session_handoff.live_session.kind]
+kind = "cursor"
+
+[capabilities.session_handoff.live_session.resource]
+resource_type = "mongodb_change_stream"
+identity_fields = [
+    "/database",
+    "/collection",
+]
+audit_identity = "fingerprint"
+
+[capabilities.session_handoff.live_session.resource.identity_schema]
+type = "object"
+required = [
+    "database",
+    "collection",
+]
+additionalProperties = false
+
+[capabilities.session_handoff.live_session.resource.identity_schema.properties.database]
+type = "string"
+minLength = 1
+maxLength = 256
+
+[capabilities.session_handoff.live_session.resource.identity_schema.properties.collection]
+type = "string"
+minLength = 1
+maxLength = 256
+
+[capabilities.session_handoff.live_session.start_parameters_schema]
+type = "object"
+additionalProperties = false
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.pipeline]
+type = "array"
+maxItems = 32
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.pipeline.items]
+type = "object"
+additionalProperties = true
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.batch_size]
+type = "integer"
+minimum = 1
+maximum = 500
+default = 100
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.max_await_ms]
+type = "integer"
+minimum = 250
+maximum = 30000
+default = 5000
+
+[capabilities.session_handoff.live_session.start_parameters_schema.properties.full_document]
+type = "boolean"
+default = false
+
+[capabilities.session_handoff.live_session.event_schema]
+type = "object"
+required = [
+    "operation_type",
+    "namespace",
+    "document_key",
+    "document_key_omitted",
+    "full_document",
+    "update_description",
+    "update_description_omitted",
+    "cluster_time",
+    "wall_time",
+    "resume_token_omitted",
+    "session_metadata_omitted",
+]
+additionalProperties = false
+
+[capabilities.session_handoff.live_session.event_schema.properties.operation_type]
+type = "string"
+
+[capabilities.session_handoff.live_session.event_schema.properties.namespace]
+type = [
+    "object",
+    "null",
+]
+
+[capabilities.session_handoff.live_session.event_schema.properties.document_key]
+
+[capabilities.session_handoff.live_session.event_schema.properties.document_key_omitted]
+type = "boolean"
+
+[capabilities.session_handoff.live_session.event_schema.properties.full_document]
+
+[capabilities.session_handoff.live_session.event_schema.properties.update_description]
+
+[capabilities.session_handoff.live_session.event_schema.properties.update_description_omitted]
+type = "boolean"
+
+[capabilities.session_handoff.live_session.event_schema.properties.cluster_time]
+type = [
+    "string",
+    "null",
+]
+
+[capabilities.session_handoff.live_session.event_schema.properties.wall_time]
+type = [
+    "string",
+    "null",
+]
+
+[capabilities.session_handoff.live_session.event_schema.properties.resume_token_omitted]
+const = true
+
+[capabilities.session_handoff.live_session.event_schema.properties.session_metadata_omitted]
+const = true
+
+[capabilities.session_handoff.live_session.operations]
+events = "mongodb.change_stream_read"
+
+[capabilities.session_handoff.live_session.buffer]
+max_events = 500
+max_bytes = 2097152
+overflow = "drop_oldest"
+
+[capabilities.session_handoff.live_session.reconnect]
+mode = "transient"
+max_attempts = 3
+initial_backoff_ms = 250
+max_backoff_ms = 2000
+resume = "exact_cursor"
+cursor_kind = "opaque"
+
+[capabilities.session_handoff.live_session.delivery]
+backpressure = "source_paced"
+cursor_scope = "required"
+max_read_wait_ms = 30000
+
+[capabilities.session_handoff.live_session.delivery.heartbeat]
+interval_ms = 10000
+idle_timeout_ms = 60000
+
+[capabilities.session_handoff.live_session.control]
+cancel = "call_and_source"
+close = "stop_observation"
 
 [[capabilities]]
 id = "indexes"
 description = "List MongoDB indexes for one collection with bounded output."
 input_schema = "schemas/indexes-input.schema.json"
 output_schema = "schemas/indexes-output.schema.json"
-permissions = ["connection.read", "mongodb.indexes.list"]
+permissions = [
+    "connection.read",
+    "mongodb.indexes.list",
+]
 risk = "read_only"
 destructive = false
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = false
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
 
 [[capabilities]]
 id = "insert"
 description = "Insert one MongoDB document."
 input_schema = "schemas/insert-input.schema.json"
 output_schema = "schemas/insert-output.schema.json"
-permissions = ["connection.write", "mongodb.documents.insert"]
+permissions = [
+    "connection.write",
+    "mongodb.documents.insert",
+]
 risk = "destructive"
 destructive = true
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = true
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "destructive"
 
 [[capabilities]]
 id = "update"
 description = "Update MongoDB documents matching a filter."
 input_schema = "schemas/update-input.schema.json"
 output_schema = "schemas/update-output.schema.json"
-permissions = ["connection.write", "mongodb.documents.update"]
+permissions = [
+    "connection.write",
+    "mongodb.documents.update",
+]
 risk = "destructive"
 destructive = true
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = true
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "destructive"
 
 [[capabilities]]
 id = "delete"
 description = "Delete MongoDB documents matching a filter."
 input_schema = "schemas/delete-input.schema.json"
 output_schema = "schemas/delete-output.schema.json"
-permissions = ["connection.write", "mongodb.documents.delete"]
+permissions = [
+    "connection.write",
+    "mongodb.documents.delete",
+]
 risk = "destructive"
 destructive = true
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = true
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "destructive"
 
 [[capabilities]]
 id = "bulk_write"
 description = "Execute a bounded ordered or unordered MongoDB write batch with item-level results."
 input_schema = "schemas/bulk_write-input.schema.json"
 output_schema = "schemas/bulk_write-output.schema.json"
-permissions = ["connection.write", "mongodb.documents.bulk_write"]
+permissions = [
+    "connection.write",
+    "mongodb.documents.bulk_write",
+]
 risk = "destructive"
 destructive = true
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = true
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "destructive"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/operations"
+label = "Bulk operations"
+value_type = "json"
+required = true
+constraint = "subset"
+risk_emphasis = "destructive"
 
 [[capabilities]]
 id = "create_index"
 description = "Create one MongoDB index."
 input_schema = "schemas/create_index-input.schema.json"
 output_schema = "schemas/create_index-output.schema.json"
-permissions = ["connection.write", "mongodb.indexes.create"]
+permissions = [
+    "connection.write",
+    "mongodb.indexes.create",
+]
 risk = "destructive"
 destructive = true
 streaming = false
+execution_mode = "stateless"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = true
 default_timeout_ms = 30000
+
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+session_purposes = []
+capability_wide_allowed = true
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/collection"
+label = "Collection"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "destructive"
 
 [[capabilities]]
 id = "run_command"
 description = "Run a raw MongoDB database command; all raw commands are destructive-gated."
 input_schema = "schemas/run_command-input.schema.json"
 output_schema = "schemas/run_command-output.schema.json"
-permissions = ["connection.write", "mongodb.raw_command"]
+permissions = [
+    "connection.write",
+    "mongodb.raw_command",
+]
 risk = "destructive"
 destructive = true
 streaming = false
+execution_mode = "both"
 connection_required = true
 required_secret_classes = []
 supports_dry_run = true
 default_timeout_ms = 30000
 
+[capabilities.authorization]
+declared = true
+interactive_execute = false
+note = "Raw command scope stays Custom; transaction state is session-bound."
+capability_wide_allowed = true
+
+[[capabilities.authorization.session_purposes]]
+kind = "database_query"
+
+[[capabilities.authorization.session_purposes]]
+kind = "database_transaction"
+
+[capabilities.authorization.approval_schema]
+version = 1
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/database"
+label = "Database"
+value_type = "resource_id"
+required = true
+constraint = "exact"
+risk_emphasis = "normal"
+
+[[capabilities.authorization.approval_schema.fields]]
+path = "/command"
+label = "MongoDB command"
+value_type = "json"
+required = true
+constraint = "exact"
+risk_emphasis = "destructive"
+
+[capabilities.session_handoff]
+capabilities = ["mongodb.run_command"]
+
+[capabilities.session_handoff.purpose]
+kind = "database_transaction"
+
 [ui]
 tui = false
+raw_input = false
 
 [requirements]
 voidb_core = ">=0.1.0"
-platforms = ["darwin", "linux", "windows"]
+platforms = [
+    "darwin",
+    "linux",
+    "windows",
+]
