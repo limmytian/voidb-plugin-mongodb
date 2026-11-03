@@ -940,7 +940,7 @@ capabilities = ["mongodb.run_command"]
 kind = "database_transaction"
 
 [ui]
-tui = false
+tui = true
 raw_input = false
 
 [requirements]
