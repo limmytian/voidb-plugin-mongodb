@@ -19,23 +19,25 @@ pub async fn create_client(config: &MongoConfig) -> Result<Client, String> {
         password,
         auth_db,
     }) = &config.auth
-        && !uri.contains('@') {
-            let scheme_end = uri.find("://").map(|i| i + 3).unwrap_or(0);
-            let scheme = &uri[..scheme_end];
-            let rest = &uri[scheme_end..];
-            uri = format!(
-                "{}{}:{}@{}",
-                scheme,
-                urlencoded(username),
-                urlencoded(password),
-                rest
-            );
-            if let Some(db) = auth_db
-                && !uri.contains("authSource=") {
-                    let sep = if uri.contains('?') { '&' } else { '?' };
-                    uri = format!("{}{}authSource={}", uri, sep, db);
-                }
+        && !uri.contains('@')
+    {
+        let scheme_end = uri.find("://").map(|i| i + 3).unwrap_or(0);
+        let scheme = &uri[..scheme_end];
+        let rest = &uri[scheme_end..];
+        uri = format!(
+            "{}{}:{}@{}",
+            scheme,
+            urlencoded(username),
+            urlencoded(password),
+            rest
+        );
+        if let Some(db) = auth_db
+            && !uri.contains("authSource=")
+        {
+            let sep = if uri.contains('?') { '&' } else { '?' };
+            uri = format!("{}{}authSource={}", uri, sep, db);
         }
+    }
 
     let mut opts = ClientOptions::parse(&uri)
         .await
@@ -84,10 +86,7 @@ pub async fn list_collections(db: &Database) -> Result<Vec<CollectionInfo>, Stri
     let mut infos = Vec::new();
     for name in names {
         let coll: Collection<Document> = db.collection(&name);
-        let doc_count = coll
-            .estimated_document_count()
-            .await
-            .unwrap_or(0);
+        let doc_count = coll.estimated_document_count().await.unwrap_or(0);
         infos.push(CollectionInfo {
             name,
             doc_count,
@@ -124,20 +123,14 @@ pub async fn find_documents(
 }
 
 /// Count documents matching a filter.
-pub async fn count_documents(
-    coll: &Collection<Document>,
-    filter: Document,
-) -> Result<u64, String> {
+pub async fn count_documents(coll: &Collection<Document>, filter: Document) -> Result<u64, String> {
     coll.count_documents(filter)
         .await
         .map_err(|e| format!("Count failed: {}", e))
 }
 
 /// Insert a single document, returning the inserted ID as string.
-pub async fn insert_document(
-    coll: &Collection<Document>,
-    doc: Document,
-) -> Result<String, String> {
+pub async fn insert_document(coll: &Collection<Document>, doc: Document) -> Result<String, String> {
     let result = coll
         .insert_one(doc)
         .await
@@ -206,9 +199,7 @@ pub async fn list_indexes(coll: &Collection<Document>) -> Result<Vec<IndexInfo>,
         .map(|m| {
             let opts = m.options.as_ref();
             IndexInfo {
-                name: opts
-                    .and_then(|o| o.name.clone())
-                    .unwrap_or_default(),
+                name: opts.and_then(|o| o.name.clone()).unwrap_or_default(),
                 keys: m.keys,
                 unique: opts.and_then(|o| o.unique).unwrap_or(false),
                 sparse: opts.and_then(|o| o.sparse).unwrap_or(false),
@@ -275,11 +266,7 @@ pub fn infer_columns(docs: &[Document]) -> Vec<String> {
 pub fn flatten_document(doc: &Document, columns: &[String]) -> Vec<String> {
     columns
         .iter()
-        .map(|col| {
-            doc.get(col)
-                .map(format_bson_value)
-                .unwrap_or_default()
-        })
+        .map(|col| doc.get(col).map(format_bson_value).unwrap_or_default())
         .collect()
 }
 
@@ -293,9 +280,9 @@ fn format_bson_value(v: &bson::Bson) -> String {
         bson::Bson::Double(n) => n.to_string(),
         bson::Bson::String(s) => s.clone(),
         bson::Bson::ObjectId(oid) => oid.to_hex(),
-        bson::Bson::DateTime(dt) => {
-            dt.try_to_rfc3339_string().unwrap_or_else(|_| dt.to_string())
-        }
+        bson::Bson::DateTime(dt) => dt
+            .try_to_rfc3339_string()
+            .unwrap_or_else(|_| dt.to_string()),
         bson::Bson::Array(a) => format!("[{} items]", a.len()),
         bson::Bson::Document(_) => "{...}".to_string(),
         bson::Bson::Binary(b) => format!("Binary({} bytes)", b.bytes.len()),

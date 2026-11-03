@@ -1,16 +1,16 @@
 //! VoidB MongoDB Plugin - Database and collection capability surface.
 
-mod config;
-mod cli_plugin;
 mod agent_session;
 mod capabilities;
+mod cli_plugin;
+mod config;
 pub mod mongo_ops;
 pub mod service;
 pub mod tui;
 mod types;
 
-pub use capabilities::{invoke_mongodb_capability, mongodb_capabilities};
 pub use agent_session::MongoAgentSessionFactory;
+pub use capabilities::{invoke_mongodb_capability, mongodb_capabilities};
 pub use cli_plugin::create_mongo_cli_plugin;
 pub use config::MongoConfig;
 
@@ -39,5 +39,9 @@ pub async fn test_connection(
         .await
         .map_err(|e| anyhow::anyhow!("{}", e))?;
 
-    Ok(format!("OK: {} databases at {}", dbs.len(), mongo_config.uri))
+    Ok(format!(
+        "OK: {} databases at {}",
+        dbs.len(),
+        mongo_config.uri
+    ))
 }

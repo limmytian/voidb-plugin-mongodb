@@ -18,10 +18,7 @@ impl MongoIndexService {
 
     /// List indexes on a collection.
     pub async fn list(&self, db: &str, collection: &str) -> Result<Vec<IndexInfo>, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
         let cursor = coll
             .list_indexes()
             .await
@@ -54,10 +51,7 @@ impl MongoIndexService {
         keys: Document,
         unique: bool,
     ) -> Result<CreateIndexResult, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
 
         let mut opts = mongodb::options::IndexOptions::default();
         if unique {
@@ -81,10 +75,7 @@ impl MongoIndexService {
 
     /// Drop an index by name.
     pub async fn drop(&self, db: &str, collection: &str, name: &str) -> Result<(), String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
         coll.drop_index(name)
             .await
             .map_err(|e| format!("Drop index failed: {}", e))

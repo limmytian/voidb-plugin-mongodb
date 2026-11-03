@@ -2,11 +2,11 @@
 
 use bson::Document;
 use futures::TryStreamExt;
-use mongodb::options::FindOptions;
 use mongodb::Client;
+use mongodb::options::FindOptions;
 
-use crate::mongo_ops;
 use super::types::{AggregateResult, DeleteResult, FindResult, InsertResult, UpdateResult};
+use crate::mongo_ops;
 
 /// Inner service for document-level operations.
 pub struct MongoDocumentService {
@@ -28,10 +28,7 @@ impl MongoDocumentService {
         skip: Option<u64>,
         sort: Option<Document>,
     ) -> Result<FindResult, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
 
         // Count total matching documents
         let total = coll
@@ -66,16 +63,8 @@ impl MongoDocumentService {
     }
 
     /// Count documents matching a filter.
-    pub async fn count(
-        &self,
-        db: &str,
-        collection: &str,
-        filter: Document,
-    ) -> Result<u64, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+    pub async fn count(&self, db: &str, collection: &str, filter: Document) -> Result<u64, String> {
+        let coll = self.client.database(db).collection::<Document>(collection);
         coll.count_documents(filter)
             .await
             .map_err(|e| format!("Count failed: {}", e))
@@ -88,10 +77,7 @@ impl MongoDocumentService {
         collection: &str,
         doc: Document,
     ) -> Result<InsertResult, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
         let result = coll
             .insert_one(doc)
             .await
@@ -109,10 +95,7 @@ impl MongoDocumentService {
         filter: Document,
         update: Document,
     ) -> Result<UpdateResult, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
         let result = coll
             .update_many(filter, update)
             .await
@@ -129,10 +112,7 @@ impl MongoDocumentService {
         collection: &str,
         filter: Document,
     ) -> Result<DeleteResult, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
         let result = coll
             .delete_many(filter)
             .await
@@ -149,10 +129,7 @@ impl MongoDocumentService {
         collection: &str,
         pipeline: Vec<Document>,
     ) -> Result<AggregateResult, String> {
-        let coll = self
-            .client
-            .database(db)
-            .collection::<Document>(collection);
+        let coll = self.client.database(db).collection::<Document>(collection);
         let cursor = coll
             .aggregate(pipeline)
             .await

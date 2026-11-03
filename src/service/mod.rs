@@ -136,10 +136,7 @@ impl MongoService {
     ///
     /// The service starts in a disconnected state. Send `MongoCommand::Connect`
     /// to create the client inside the background task (avoids block_on deadlock).
-    pub fn new(
-        tabs: Arc<dyn TabManager>,
-        runtime: tokio::runtime::Handle,
-    ) -> Self {
+    pub fn new(tabs: Arc<dyn TabManager>, runtime: tokio::runtime::Handle) -> Self {
         let (cmd_tx, cmd_rx) = mpsc::unbounded_channel::<MongoCommand>();
         let (event_tx, event_rx) = mpsc::unbounded_channel::<MongoEvent>();
 
@@ -222,13 +219,14 @@ impl MongoService {
     }
 
     /// Run a raw database command (Direct mode).
-    pub async fn direct_run_command(&self, db: &str, command: Document) -> Result<Document, String> {
+    pub async fn direct_run_command(
+        &self,
+        db: &str,
+        command: Document,
+    ) -> Result<Document, String> {
         match &self.mode {
             ServiceMode::Direct { idx_svc, .. } => {
-                idx_svc
-                    .run_command(db, command)
-                    .await
-                    .map(|r| r.document)
+                idx_svc.run_command(db, command).await.map(|r| r.document)
             }
             ServiceMode::Channel { .. } => {
                 Err("direct_run_command() requires Direct mode".to_string())
@@ -248,11 +246,11 @@ impl MongoService {
     ) -> Result<FindResult, String> {
         match &self.mode {
             ServiceMode::Direct { doc_svc, .. } => {
-                doc_svc.find(db, collection, filter, limit, skip, sort).await
+                doc_svc
+                    .find(db, collection, filter, limit, skip, sort)
+                    .await
             }
-            ServiceMode::Channel { .. } => {
-                Err("direct_find() requires Direct mode".to_string())
-            }
+            ServiceMode::Channel { .. } => Err("direct_find() requires Direct mode".to_string()),
         }
     }
 
@@ -265,9 +263,7 @@ impl MongoService {
     ) -> Result<u64, String> {
         match &self.mode {
             ServiceMode::Direct { doc_svc, .. } => doc_svc.count(db, collection, filter).await,
-            ServiceMode::Channel { .. } => {
-                Err("direct_count() requires Direct mode".to_string())
-            }
+            ServiceMode::Channel { .. } => Err("direct_count() requires Direct mode".to_string()),
         }
     }
 
@@ -280,9 +276,7 @@ impl MongoService {
     ) -> Result<InsertResult, String> {
         match &self.mode {
             ServiceMode::Direct { doc_svc, .. } => doc_svc.insert(db, collection, doc).await,
-            ServiceMode::Channel { .. } => {
-                Err("direct_insert() requires Direct mode".to_string())
-            }
+            ServiceMode::Channel { .. } => Err("direct_insert() requires Direct mode".to_string()),
         }
     }
 
@@ -298,9 +292,7 @@ impl MongoService {
             ServiceMode::Direct { doc_svc, .. } => {
                 doc_svc.update(db, collection, filter, update).await
             }
-            ServiceMode::Channel { .. } => {
-                Err("direct_update() requires Direct mode".to_string())
-            }
+            ServiceMode::Channel { .. } => Err("direct_update() requires Direct mode".to_string()),
         }
     }
 
@@ -313,9 +305,7 @@ impl MongoService {
     ) -> Result<DeleteResult, String> {
         match &self.mode {
             ServiceMode::Direct { doc_svc, .. } => doc_svc.delete(db, collection, filter).await,
-            ServiceMode::Channel { .. } => {
-                Err("direct_delete() requires Direct mode".to_string())
-            }
+            ServiceMode::Channel { .. } => Err("direct_delete() requires Direct mode".to_string()),
         }
     }
 
@@ -383,19 +373,17 @@ impl MongoService {
 
         while let Some(cmd) = cmd_rx.recv().await {
             match cmd {
-                MongoCommand::Connect { config } => {
-                    match mongo_ops::create_client(&config).await {
-                        Ok(client) => {
-                            db_svc = Some(MongoDatabaseService::new(client.clone()));
-                            doc_svc = Some(MongoDocumentService::new(client.clone()));
-                            idx_svc = Some(MongoIndexService::new(client));
-                            let _ = event_tx.send(MongoEvent::Connected);
-                        }
-                        Err(e) => {
-                            let _ = event_tx.send(MongoEvent::Error(e));
-                        }
+                MongoCommand::Connect { config } => match mongo_ops::create_client(&config).await {
+                    Ok(client) => {
+                        db_svc = Some(MongoDatabaseService::new(client.clone()));
+                        doc_svc = Some(MongoDocumentService::new(client.clone()));
+                        idx_svc = Some(MongoIndexService::new(client));
+                        let _ = event_tx.send(MongoEvent::Connected);
                     }
-                }
+                    Err(e) => {
+                        let _ = event_tx.send(MongoEvent::Error(e));
+                    }
+                },
 
                 MongoCommand::Disconnect => break,
 
@@ -450,8 +438,8 @@ impl MongoService {
                             sort,
                         } => match svc.find(&db, &collection, filter, limit, skip, sort).await {
                             Ok(r) => {
-                                let _ = event_tx
-                                    .send(MongoEvent::Document(DocumentEvent::Found(r)));
+                                let _ =
+                                    event_tx.send(MongoEvent::Document(DocumentEvent::Found(r)));
                             }
                             Err(e) => {
                                 let _ = event_tx.send(MongoEvent::Error(e));
@@ -463,8 +451,8 @@ impl MongoService {
                             filter,
                         } => match svc.count(&db, &collection, filter).await {
                             Ok(c) => {
-                                let _ = event_tx
-                                    .send(MongoEvent::Document(DocumentEvent::Counted(c)));
+                                let _ =
+                                    event_tx.send(MongoEvent::Document(DocumentEvent::Counted(c)));
                             }
                             Err(e) => {
                                 let _ = event_tx.send(MongoEvent::Error(e));
@@ -476,8 +464,8 @@ impl MongoService {
                             doc,
                         } => match svc.insert(&db, &collection, doc).await {
                             Ok(r) => {
-                                let _ = event_tx
-                                    .send(MongoEvent::Document(DocumentEvent::Inserted(r)));
+                                let _ =
+                                    event_tx.send(MongoEvent::Document(DocumentEvent::Inserted(r)));
                             }
                             Err(e) => {
                                 let _ = event_tx.send(MongoEvent::Error(e));
@@ -490,8 +478,8 @@ impl MongoService {
                             update,
                         } => match svc.update(&db, &collection, filter, update).await {
                             Ok(r) => {
-                                let _ = event_tx
-                                    .send(MongoEvent::Document(DocumentEvent::Updated(r)));
+                                let _ =
+                                    event_tx.send(MongoEvent::Document(DocumentEvent::Updated(r)));
                             }
                             Err(e) => {
                                 let _ = event_tx.send(MongoEvent::Error(e));
@@ -503,8 +491,8 @@ impl MongoService {
                             filter,
                         } => match svc.delete(&db, &collection, filter).await {
                             Ok(r) => {
-                                let _ = event_tx
-                                    .send(MongoEvent::Document(DocumentEvent::Deleted(r)));
+                                let _ =
+                                    event_tx.send(MongoEvent::Document(DocumentEvent::Deleted(r)));
                             }
                             Err(e) => {
                                 let _ = event_tx.send(MongoEvent::Error(e));
@@ -551,8 +539,7 @@ impl MongoService {
                             unique,
                         } => match svc.create(&db, &collection, keys, unique).await {
                             Ok(r) => {
-                                let _ =
-                                    event_tx.send(MongoEvent::Index(IndexEvent::Created(r)));
+                                let _ = event_tx.send(MongoEvent::Index(IndexEvent::Created(r)));
                             }
                             Err(e) => {
                                 let _ = event_tx.send(MongoEvent::Error(e));
@@ -564,8 +551,8 @@ impl MongoService {
                             name,
                         } => match svc.drop(&db, &collection, &name).await {
                             Ok(()) => {
-                                let _ = event_tx
-                                    .send(MongoEvent::Index(IndexEvent::Dropped { name }));
+                                let _ =
+                                    event_tx.send(MongoEvent::Index(IndexEvent::Dropped { name }));
                             }
                             Err(e) => {
                                 let _ = event_tx.send(MongoEvent::Error(e));

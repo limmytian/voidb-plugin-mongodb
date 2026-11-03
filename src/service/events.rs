@@ -21,7 +21,10 @@ pub enum MongoEvent {
 /// Database sub-events.
 pub enum DatabaseEvent {
     DatabasesListed(Vec<DbInfo>),
-    CollectionsListed { db: String, collections: Vec<CollectionInfo> },
+    CollectionsListed {
+        db: String,
+        collections: Vec<CollectionInfo>,
+    },
 }
 
 /// Document sub-events.
