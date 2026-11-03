@@ -6,6 +6,7 @@ mod agent_session;
 mod capabilities;
 pub mod mongo_ops;
 pub mod service;
+pub mod tui;
 mod types;
 
 pub use capabilities::{invoke_mongodb_capability, mongodb_capabilities};

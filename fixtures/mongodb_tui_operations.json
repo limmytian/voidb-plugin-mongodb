@@ -1,0 +1,286 @@
+{
+  "profile_label": "fixture-mongodb-ops",
+  "server_label": "fixture-mongodb-local",
+  "uri_scheme": "mongodb",
+  "default_db": "appdb",
+  "status": "fixture mongodb operations ready",
+  "target_error": "target error: not authorized on appdb to execute command (triage scope active)",
+  "error_collections": ["appdb.locked_collection"],
+  "error_message": "target error: not authorized on appdb.locked_collection to execute command (fixture)",
+  "databases": [
+    { "name": "appdb", "size_on_disk": 245760, "empty": false },
+    { "name": "analytics", "size_on_disk": 81920, "empty": false },
+    { "name": "audit", "size_on_disk": 40960, "empty": false },
+    { "name": "empty_archive", "size_on_disk": 0, "empty": true }
+  ],
+  "collections": {
+    "appdb": [
+      { "name": "orders", "doc_count": 12 },
+      { "name": "users", "doc_count": 4 },
+      { "name": "locked_collection", "doc_count": 1 },
+      { "name": "empty_collection", "doc_count": 0 }
+    ],
+    "analytics": [
+      { "name": "events", "doc_count": 3 }
+    ],
+    "audit": [
+      { "name": "access_log", "doc_count": 2 }
+    ],
+    "empty_archive": []
+  },
+  "finds": [
+    {
+      "database": "appdb",
+      "collection": "orders",
+      "documents": [
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c01" },
+          "order_no": "SO-1001",
+          "status": "shipped",
+          "total_usd": 415.5,
+          "customer": { "name": "Harbor Freight", "tier": "gold" },
+          "items": [
+            { "sku": "WIDG-0042", "qty": 2, "price": 199.0 },
+            { "sku": "SPRK-0100", "qty": 1, "price": 17.5 }
+          ],
+          "tags": ["priority"],
+          "created_at": { "$date": "2026-05-17T09:30:00Z" },
+          "notes": null
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c02" },
+          "order_no": "SO-1002",
+          "status": "failed",
+          "total_usd": 59.0,
+          "customer": { "name": "Nordwind GmbH", "tier": "silver" },
+          "items": [{ "sku": "CBL-USB4", "qty": 2, "price": 29.5 }],
+          "tags": ["review", "refund"],
+          "created_at": { "$date": "2026-05-17T10:12:00Z" },
+          "failure_reason": "payment_declined"
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c03" },
+          "order_no": "SO-1003",
+          "status": "pending",
+          "total_usd": 1200.0,
+          "customer": { "name": "Aster Labs", "tier": "platinum" },
+          "items": [
+            { "sku": "SRV-RACK1", "qty": 1, "price": 1200.0 }
+          ],
+          "tags": [],
+          "created_at": { "$date": "2026-05-17T11:45:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c04" },
+          "order_no": "SO-1004",
+          "status": "shipped",
+          "total_usd": 88.25,
+          "customer": { "name": "Kite & Co", "tier": "bronze" },
+          "items": [{ "sku": "ADP-HDMI", "qty": 1, "price": 88.25 }],
+          "tags": ["gift"],
+          "created_at": { "$date": "2026-05-17T13:02:00Z" },
+          "notes": "leave at front desk"
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c05" },
+          "order_no": "SO-1005",
+          "status": "failed",
+          "total_usd": 310.0,
+          "customer": { "name": "Quanta Foods", "tier": "silver" },
+          "items": [
+            { "sku": "CHL-COLD", "qty": 5, "price": 62.0 }
+          ],
+          "tags": ["review"],
+          "created_at": { "$date": "2026-05-17T14:20:00Z" },
+          "failure_reason": "address_unreachable"
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c06" },
+          "order_no": "SO-1006",
+          "status": "shipped",
+          "total_usd": 42.0,
+          "customer": { "name": "Lumen Dental", "tier": "bronze" },
+          "items": [{ "sku": "LMP-UV-C", "qty": 2, "price": 21.0 }],
+          "tags": [],
+          "created_at": { "$date": "2026-05-17T15:31:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c07" },
+          "order_no": "SO-1007",
+          "status": "pending",
+          "total_usd": 999.99,
+          "customer": { "name": "Vega Robotics", "tier": "gold" },
+          "items": [
+            { "sku": "ARM-SRV4", "qty": 1, "price": 999.99 }
+          ],
+          "tags": ["priority", "install"],
+          "created_at": { "$date": "2026-05-17T16:05:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c08" },
+          "order_no": "SO-1008",
+          "status": "shipped",
+          "total_usd": 15.5,
+          "customer": { "name": "Pine Grove School", "tier": "bronze" },
+          "items": [{ "sku": "CBL-LAN6", "qty": 1, "price": 15.5 }],
+          "tags": [],
+          "created_at": { "$date": "2026-05-17T17:44:00Z" },
+          "notes": null
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c09" },
+          "order_no": "SO-1009",
+          "status": "failed",
+          "total_usd": 275.0,
+          "customer": { "name": "Cobalt Media", "tier": "silver" },
+          "items": [{ "sku": "CAM-BAT1", "qty": 5, "price": 55.0 }],
+          "tags": ["review", "escalate"],
+          "created_at": { "$date": "2026-05-17T18:26:00Z" },
+          "failure_reason": "inventory_shortfall"
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c0a" },
+          "order_no": "SO-1010",
+          "status": "shipped",
+          "total_usd": 640.0,
+          "customer": { "name": "Harbor Freight", "tier": "gold" },
+          "items": [
+            { "sku": "WIDG-0042", "qty": 3, "price": 199.0 },
+            { "sku": "SPRK-0100", "qty": 1, "price": 43.0 }
+          ],
+          "tags": ["priority"],
+          "created_at": { "$date": "2026-05-17T19:08:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c0b" },
+          "order_no": "SO-1011",
+          "status": "pending",
+          "total_usd": 78.0,
+          "customer": { "name": "Aster Labs", "tier": "platinum" },
+          "items": [{ "sku": "SNS-THRM2", "qty": 2, "price": 39.0 }],
+          "tags": [],
+          "created_at": { "$date": "2026-05-17T20:19:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f1a2b3c4d5e6f7a8b9c0c" },
+          "order_no": "SO-1012",
+          "status": "poisoned",
+          "total_usd": 0.0,
+          "customer": { "name": "unknown", "tier": "unknown" },
+          "items": [],
+          "tags": ["quarantine"],
+          "created_at": { "$date": "2026-05-17T23:59:00Z" },
+          "notes": "corrupted intake record; remove after audit"
+        }
+      ]
+    },
+    {
+      "database": "appdb",
+      "collection": "users",
+      "documents": [
+        {
+          "_id": { "$oid": "665f2c3d4e5f6a7b8c9d0e01" },
+          "email": "ops-1@fixture.local",
+          "roles": ["viewer", "triage"],
+          "profile": { "display_name": "Ops One", "locale": "en-US" },
+          "login_count": 42,
+          "mfa": true,
+          "last_login": { "$date": "2026-05-18T08:01:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f2c3d4e5f6a7b8c9d0e02" },
+          "email": "ops-2@fixture.local",
+          "roles": ["viewer"],
+          "profile": { "display_name": "Ops Two", "locale": "en-US" },
+          "login_count": 7,
+          "mfa": false,
+          "last_login": { "$date": "2026-05-18T09:15:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f2c3d4e5f6a7b8c9d0e03" },
+          "email": "svc-ingest@fixture.local",
+          "roles": ["writer"],
+          "profile": { "display_name": "Ingest Bot", "locale": null },
+          "login_count": 0,
+          "mfa": false,
+          "last_login": null
+        },
+        {
+          "_id": { "$oid": "665f2c3d4e5f6a7b8c9d0e04" },
+          "email": "auditor@fixture.local",
+          "roles": ["viewer", "auditor"],
+          "profile": { "display_name": "Auditor", "locale": "en-GB" },
+          "login_count": 312,
+          "mfa": true,
+          "last_login": { "$date": "2026-05-18T07:44:00Z" }
+        }
+      ]
+    },
+    {
+      "database": "appdb",
+      "collection": "locked_collection",
+      "documents": [
+        {
+          "_id": { "$oid": "665f3d4e5f6a7b8c9d0e0f01" },
+          "payload": "held by a triage lock",
+          "locked": true
+        }
+      ]
+    },
+    {
+      "database": "appdb",
+      "collection": "empty_collection",
+      "documents": []
+    },
+    {
+      "database": "analytics",
+      "collection": "events",
+      "documents": [
+        {
+          "_id": { "$oid": "665f4e5f6a7b8c9d0e1a2b01" },
+          "kind": "page_view",
+          "duration_ms": 4312,
+          "weight": 0.75,
+          "bot": false,
+          "campaign": null
+        },
+        {
+          "_id": { "$oid": "665f4e5f6a7b8c9d0e1a2b02" },
+          "kind": "checkout",
+          "duration_ms": 15890,
+          "weight": 1.5,
+          "bot": false,
+          "campaign": "spring_bundle"
+        },
+        {
+          "_id": { "$oid": "665f4e5f6a7b8c9d0e1a2b03" },
+          "kind": "crawl",
+          "duration_ms": 97,
+          "weight": 0.0,
+          "bot": true,
+          "campaign": null
+        }
+      ]
+    },
+    {
+      "database": "audit",
+      "collection": "access_log",
+      "documents": [
+        {
+          "_id": { "$oid": "665f5f6a7b8c9d0e2b3c4d01" },
+          "actor": "ops-1@fixture.local",
+          "action": "document.view",
+          "digest": { "$binary": { "base64": "AQIDBA==", "subType": "00" } },
+          "at": { "$date": "2026-05-18T10:00:00Z" }
+        },
+        {
+          "_id": { "$oid": "665f5f6a7b8c9d0e2b3c4d02" },
+          "actor": "auditor@fixture.local",
+          "action": "collection.list",
+          "digest": { "$binary": { "base64": "CgsMDQ==", "subType": "00" } },
+          "at": { "$date": "2026-05-18T10:05:00Z" }
+        }
+      ]
+    }
+  ]
+}

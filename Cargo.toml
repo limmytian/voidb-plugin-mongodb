@@ -27,6 +27,8 @@ async-trait = "0.1"
 base64 = "0.22"
 chrono = { version = "0.4", features = ["serde"] }
 rpassword = "7"
+ratatui = "0.29"
+crossterm = "0.28"
 
 [dev-dependencies]
 toml = "0.8"
