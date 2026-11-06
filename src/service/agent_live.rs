@@ -273,6 +273,16 @@ pub async fn execute_bulk(
     operations: Vec<MongoBulkOperation>,
     ordered: bool,
 ) -> Result<MongoBulkResult, String> {
+    // Hard cap: unbounded bulk loops let a single invocation drive thousands
+    // of sequential server round-trips (update_many/delete_many inside the
+    // loop multiply the cost).
+    const MAX_BULK_OPERATIONS: usize = 500;
+    if operations.len() > MAX_BULK_OPERATIONS {
+        return Err(format!(
+            "Bulk request exceeds the {MAX_BULK_OPERATIONS}-operation limit (got {}); split it into smaller batches",
+            operations.len()
+        ));
+    }
     let client = mongo_ops::create_client(config).await?;
     let collection = client.database(database).collection::<Document>(collection);
     let total = operations.len();
