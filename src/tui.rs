@@ -712,6 +712,11 @@ fn preflight_value(launch: &MongoTuiLaunch) -> Value {
 }
 
 fn run_loop(terminal: &mut ratatui::DefaultTerminal, app: &mut MongoTuiApp) -> Result<()> {
+    // Startup auto-load (standalone TUI acceptance): the primary view must
+    // show live data without requiring a manual refresh key.
+    if app.service.is_some() {
+        app.refresh_view();
+    }
     terminal.draw(|frame| app.draw(frame))?;
     loop {
         let mut dirty = app.drain_service();
