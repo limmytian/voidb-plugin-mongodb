@@ -32,31 +32,31 @@ This plugin runs as an autonomous, out-of-process plugin adhering to VoidB's `pr
 
 ## Usage & Operational Modes
 
-When installed, `voidb-cli` automatically discovers this plugin and provides seamless transparent dispatch:
+When installed, `vb` automatically discovers this plugin and provides seamless transparent dispatch:
 
 ### 1. Human Operations (CLI)
 
 ```bash
 # Connectivity test
-voidb-cli mongodb test --profile local-mongo
+vb mongodb test --profile local-mongo
 
 # Database and collection discovery
-voidb-cli mongodb dbs --profile local-mongo
-voidb-cli mongodb collections my_db --profile local-mongo
-voidb-cli mongodb stats my_db my_coll --profile local-mongo
+vb mongodb dbs --profile local-mongo
+vb mongodb collections my_db --profile local-mongo
+vb mongodb stats my_db my_coll --profile local-mongo
 
 # Document operations and queries
-voidb-cli mongodb find my_db my_coll --filter '{"status":"active"}' --limit 10 --profile local-mongo
-voidb-cli mongodb count my_db my_coll --filter '{"status":"active"}' --profile local-mongo
-voidb-cli mongodb indexes my_db my_coll --profile local-mongo
-voidb-cli mongodb aggregate my_db my_coll --pipeline '[{"$match":{"status":"active"}},{"$count":"total"}]' --profile local-mongo
+vb mongodb find my_db my_coll --filter '{"status":"active"}' --limit 10 --profile local-mongo
+vb mongodb count my_db my_coll --filter '{"status":"active"}' --profile local-mongo
+vb mongodb indexes my_db my_coll --profile local-mongo
+vb mongodb aggregate my_db my_coll --pipeline '[{"$match":{"status":"active"}},{"$count":"total"}]' --profile local-mongo
 ```
 
 ### 2. Machine Communication (AI Agents & JSON-RPC)
 
 ```bash
-# Run the stdio-jsonrpc server directly or via voidb-cli
-voidb-cli mongodb serve
+# Run the stdio-jsonrpc server directly or via vb
+vb mongodb serve
 # Or directly run the binary:
 ./bin/voidb-plugin-mongodb serve
 ```
@@ -75,8 +75,8 @@ cp -r plugin.toml bin schemas "$HOME/Library/Application Support/voidb/plugins/m
 Verify discovery via `voidb`:
 
 ```bash
-voidb-cli plugin list
-voidb-cli mongodb --help
+vb plugin list
+vb mongodb --help
 ```
 
 ### Development & Build
