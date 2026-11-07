@@ -56,8 +56,9 @@ async fn main() -> Result<()> {
         diagnostics.output["uri_scheme"] == "mongodb"
             && diagnostics.output["default_db_present"] == true
             && diagnostics.output["auth_type"].is_null()
-            && diagnostics.output["network_checked"] == false,
-        "diagnostics should return shape-only metadata: {}",
+            && diagnostics.output["network_checked"] == true
+            && diagnostics.output["hello"]["is_writable_primary"] == true,
+        "diagnostics should run a real hello round-trip: {}",
         diagnostics.output
     );
     ensure_result_excludes(&diagnostics, secret_samples(&config), "mongodb.diagnostics")?;

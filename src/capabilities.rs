@@ -1,6 +1,6 @@
 #![allow(clippy::result_large_err)]
 
-use bson::{Bson, Document};
+use bson::{Bson, Document, doc};
 use serde_json::{Value, json};
 use voidb_core::{
     CapabilityDefinition, CapabilityError, CapabilityErrorCategory, CapabilityInvocation,
@@ -12,6 +12,7 @@ use crate::agent_session::{
     CHANGE_STREAM_READ_CAPABILITY, CURSOR_READ_CAPABILITY, mongodb_live_session_contract,
 };
 use crate::config::{MongoAuth, MongoConfig};
+use crate::mongo_ops::create_client;
 use crate::service::agent_live::{MongoBulkOperation, execute_bulk};
 use crate::service::{CollectionInfo, DbInfo, IndexInfo, MongoService};
 
@@ -24,7 +25,7 @@ pub fn mongodb_capabilities() -> Vec<CapabilityDefinition> {
     vec![
         capability(
             "diagnostics",
-            "Return agent-safe MongoDB profile diagnostics without opening a cluster connection.",
+            "Run a real hello round-trip (and a best-effort bounded serverStatus) and return agent-safe, redacted MongoDB diagnostics.",
             empty_input_schema(),
             json!({
                 "type": "object",
@@ -42,7 +43,9 @@ pub fn mongodb_capabilities() -> Vec<CapabilityDefinition> {
                     "auth_type": { "type": ["string", "null"] },
                     "timeout_secs": { "type": "integer", "minimum": 0 },
                     "tls_enabled": { "type": "boolean" },
-                    "network_checked": { "type": "boolean" }
+                    "network_checked": { "type": "boolean" },
+                    "hello": { "type": "object" },
+                    "server_status": { "type": "object" }
                 },
                 "additionalProperties": false
             }),
@@ -338,7 +341,7 @@ pub async fn invoke_mongodb_capability(
     }
 
     match invocation.capability_id.as_str() {
-        "diagnostics" => Ok(diagnostics_result(config, invocation.id)),
+        "diagnostics" => invoke_diagnostics(config, invocation).await,
         "databases" => invoke_databases(config, invocation).await,
         "collections" => invoke_collections(config, invocation).await,
         "find" => invoke_find(config, invocation).await,
@@ -606,16 +609,95 @@ fn mongodb_collection_schema(destructive: bool) -> voidb_core::CapabilityApprova
     ])
 }
 
-fn diagnostics_result(config: &MongoConfig, invocation_id: String) -> CapabilityInvocationResult {
-    let output = json!({
+fn diagnostics_result(
+    config: &MongoConfig,
+    invocation_id: String,
+    output: Value,
+) -> CapabilityInvocationResult {
+    let summary = json!({
         "uri_scheme": uri_scheme(&config.uri),
         "default_db_present": config.default_db.is_some(),
         "auth_type": mongo_auth_type(config),
         "timeout_secs": config.timeout,
         "tls_enabled": config.tls.enabled,
-        "network_checked": false,
+        "network_checked": output["network_checked"],
+        "is_writable_primary": output["hello"]["is_writable_primary"],
+        "server_status_available": output["server_status"].is_object(),
     });
-    result(invocation_id, output.clone(), output, None)
+    result(invocation_id, output, summary, None)
+}
+
+async fn invoke_diagnostics(
+    config: &MongoConfig,
+    invocation: CapabilityInvocation,
+) -> Result<CapabilityInvocationResult, CapabilityError> {
+    let invocation_id = invocation.id.clone();
+    let client = create_client(config)
+        .await
+        .map_err(|error| target_error(config, "mongodb.diagnostics_unreachable", error))?;
+    let admin = client.database("admin");
+
+    let hello: Document = admin
+        .run_command(doc! { "hello": 1 })
+        .await
+        .map_err(|error| {
+            target_error(config, "mongodb.diagnostics_unreachable", error.to_string())
+        })?;
+
+    let mut output = json!({
+        "uri_scheme": uri_scheme(&config.uri),
+        "default_db_present": config.default_db.is_some(),
+        "auth_type": mongo_auth_type(config),
+        "timeout_secs": config.timeout,
+        "tls_enabled": config.tls.enabled,
+        "network_checked": true,
+        "hello": redacted_hello_fields(&hello),
+    });
+
+    // serverStatus needs elevated privileges on locked-down deployments and
+    // carries far more surface than agents need, so it is a best-effort
+    // round-trip reduced to a small allow-list of fields.
+    match admin.run_command(doc! { "serverStatus": 1 }).await {
+        Ok(status) => {
+            output["server_status"] = redacted_server_status_fields(&status);
+        }
+        Err(error) => {
+            output["server_status"] = json!({
+                "status": "unavailable",
+                "error": error.to_string(),
+            });
+        }
+    }
+
+    Ok(diagnostics_result(config, invocation_id, output))
+}
+
+/// Reduce the `hello` reply to a small agent-safe allow-list. Topology
+/// hostnames (`me`, `hosts`, `passives`, `arbiters`) and any other fields are
+/// deliberately omitted: they describe infrastructure without adding
+/// diagnostic value, and the URI is never echoed.
+fn redacted_hello_fields(hello: &Document) -> Value {
+    json!({
+        "is_writable_primary": hello.get_bool("isWritablePrimary").unwrap_or(false),
+        "msg": hello.get_str("msg").ok().map(str::to_string),
+        "max_wire_version": hello.get_i32("maxWireVersion").ok(),
+        "min_wire_version": hello.get_i32("minWireVersion").ok(),
+    })
+}
+
+/// Reduce the `serverStatus` reply to a small agent-safe allow-list.
+fn redacted_server_status_fields(status: &Document) -> Value {
+    let connections = status.get_document("connections").ok();
+    json!({
+        "host": status.get_str("host").ok().map(str::to_string),
+        "version": status.get_str("version").ok().map(str::to_string),
+        "process": status.get_str("process").ok().map(str::to_string),
+        "uptime_secs": status.get_i32("uptime").ok(),
+        "connections": {
+            "current": connections.and_then(|c| c.get_i32("current").ok()),
+            "available": connections.and_then(|c| c.get_i32("available").ok()),
+        },
+    })
 }
 
 async fn invoke_databases(
@@ -1904,7 +1986,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn diagnostics_do_not_open_mongodb_connection_or_expose_secrets() {
+    async fn diagnostics_round_trip_fails_closed_without_a_server_and_exposes_no_secrets() {
         let config = MongoConfig {
             uri: "mongodb://user:secret@127.0.0.1:1/app".into(),
             auth: Some(MongoAuth::Password {
@@ -1912,21 +1994,55 @@ mod tests {
                 password: "secret".into(),
                 auth_db: Some("admin".into()),
             }),
-            timeout: 7,
+            timeout: 1,
             ..Default::default()
         };
 
-        let result = invoke_mongodb_capability(&config, invocation("diagnostics", json!({})))
+        let error = invoke_mongodb_capability(&config, invocation("diagnostics", json!({})))
             .await
-            .expect("diagnostics");
-        let encoded = serde_json::to_string(&result).expect("serialize");
+            .expect_err("no MongoDB server on port 1");
+        let encoded = serde_json::to_string(&error).expect("serialize error");
 
-        assert_eq!(result.output["uri_scheme"], "mongodb");
-        assert_eq!(result.output["auth_type"], "password");
-        assert_eq!(result.output["timeout_secs"], 7);
-        assert_eq!(result.output["network_checked"], false);
+        assert_eq!(error.code, "mongodb.diagnostics_unreachable");
+        assert_eq!(error.category, CapabilityErrorCategory::TargetSystem);
         assert!(!encoded.contains("secret"));
         assert!(!encoded.contains("127.0.0.1"));
+        assert!(!encoded.contains("user:secret"));
+    }
+
+    #[test]
+    fn diagnostics_field_pickers_reduce_hello_and_server_status_to_allow_lists() {
+        let hello = doc! {
+            "isWritablePrimary": true,
+            "msg": "isdbgrid",
+            "maxWireVersion": 25i32,
+            "minWireVersion": 0i32,
+            "me": "secret-host.internal.example:27017",
+            "hosts": ["secret-host.internal.example:27017"],
+            "setName": "rs0",
+        };
+        let hello_value = redacted_hello_fields(&hello);
+        let hello_encoded = serde_json::to_string(&hello_value).expect("serialize hello");
+        assert_eq!(hello_value["is_writable_primary"], true);
+        assert_eq!(hello_value["msg"], "isdbgrid");
+        assert_eq!(hello_value["max_wire_version"], 25);
+        assert!(!hello_encoded.contains("secret-host"));
+        assert!(!hello_encoded.contains("rs0"));
+
+        let status = doc! {
+            "host": "node1.internal.example:27017",
+            "version": "8.0.0",
+            "process": "mongod",
+            "uptime": 42i32,
+            "connections": { "current": 3i32, "available": 100i32 },
+            "security": { "authenticationMechanisms": ["SCRAM-SHA-256"] },
+        };
+        let status_value = redacted_server_status_fields(&status);
+        let status_encoded = serde_json::to_string(&status_value).expect("serialize status");
+        assert_eq!(status_value["version"], "8.0.0");
+        assert_eq!(status_value["connections"]["current"], 3);
+        assert!(!status_encoded.contains("authenticationMechanisms"));
+        assert!(!status_encoded.contains("SCRAM"));
     }
 
     #[test]
