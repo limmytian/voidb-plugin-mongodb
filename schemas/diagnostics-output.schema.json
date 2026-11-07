@@ -33,6 +33,12 @@
     },
     "network_checked": {
       "type": "boolean"
+    },
+    "hello": {
+      "type": "object"
+    },
+    "server_status": {
+      "type": "object"
     }
   },
   "additionalProperties": false
