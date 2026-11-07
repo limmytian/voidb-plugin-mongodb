@@ -24,7 +24,7 @@ secret_classes = [
 
 [[capabilities]]
 id = "diagnostics"
-description = "Return agent-safe MongoDB profile diagnostics without opening a cluster connection."
+description = "Run a real hello round-trip (and a best-effort bounded serverStatus) and return agent-safe, redacted MongoDB diagnostics."
 input_schema = "schemas/diagnostics-input.schema.json"
 output_schema = "schemas/diagnostics-output.schema.json"
 permissions = [
